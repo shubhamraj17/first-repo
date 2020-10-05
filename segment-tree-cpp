@@ -1,35 +1,16 @@
-// C++ program to show segment tree operations like construction, query 
-// and update 
 #include <bits/stdc++.h> 
 using namespace std; 
 
 // A utility function to get the middle index from corner indexes. 
 int getMid(int s, int e) { return s + (e -s)/2; } 
 
-/* A recursive function to get the sum of values in the given range 
-	of the array. The following are parameters for this function. 
-
-	st --> Pointer to segment tree 
-	si --> Index of current node in the segment tree. Initially 
-			0 is passed as root is always at index 0 
-	ss & se --> Starting and ending indexes of the segment represented 
-				by current node, i.e., st[si] 
-	qs & qe --> Starting and ending indexes of query range */
 int getSumUtil(int *st, int ss, int se, int qs, int qe, int si) 
-{ 
-	// If segment of this node is a part of given range, then return 
-	// the sum of the segment 
-	if (qs <= ss && qe >= se) 
-		return st[si]; 
-
-	// If segment of this node is outside the given range 
-	if (se < qs || ss > qe) 
-		return 0; 
-
-	// If a part of this segment overlaps with the given range 
+{
+	if (qs <= ss && qe >= se) return st[si]; 
+	
+	if (se < qs || ss > qe) return 0; 
 	int mid = getMid(ss, se); 
-	return getSumUtil(st, ss, mid, qs, qe, 2*si+1) + 
-		getSumUtil(st, mid+1, se, qs, qe, 2*si+2); 
+	return getSumUtil(st, ss, mid, qs, qe, 2*si+1) + getSumUtil(st, mid+1, se, qs, qe, 2*si+2); 
 } 
 
 /* A recursive function to update the nodes which have the given 
@@ -50,6 +31,7 @@ void updateValueUtil(int *st, int ss, int se, int i, int diff, int si)
 	st[si] = st[si] + diff; 
 	if (se != ss) 
 	{ 
+		// Getting the mid valur of the tree
 		int mid = getMid(ss, se); 
 		updateValueUtil(st, ss, mid, i, diff, 2*si + 1); 
 		updateValueUtil(st, mid+1, se, i, diff, 2*si + 2); 
