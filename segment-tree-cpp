@@ -52,6 +52,38 @@ void update(int v, int tl, int tr, int pos, int new_val) {
         t[v] = t[v*2] + t[v*2+1];
     }
 }
+ll query_sum(ll* tree, ll* lazy, ll start, ll end, ll treenode, ll left, ll right)
+{
+	if (start > end)
+	{
+		return 0;
+	}
+	if (lazy[treenode] != 0)
+	{
+		tree[treenode] += (end - start + 1) * lazy[treenode];
+		if (start != end)
+		{
+			lazy[2 * treenode] += lazy[treenode];
+			lazy[2 * treenode + 1] += lazy[treenode];
+		}
+		lazy[treenode] = 0;
+	}
+	//completely outside
+	if (start > right || end < left)
+	{
+		return 0;
+	}
+	//completely inside
+	if (start >= left && end <= right)
+	{
+		return tree[treenode];
+	}
+	//partial overlap
+	ll mid = (start + end) / 2;
+	ll left_child = query_sum(tree, lazy, start, mid, 2 * treenode, left, right);
+	ll right_child = query_sum(tree, lazy, mid + 1, end, 2 * treenode + 1, left, right);
+	return left_child + right_child;
+}
 
 // Return sum of elements in range from index qs (quey start) 
 // to qe (query end). It mainly uses getSumUtil() 
