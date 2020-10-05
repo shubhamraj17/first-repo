@@ -1,8 +1,19 @@
 #include <bits/stdc++.h> 
 using namespace std; 
+struct tree_attrs
+{
+	int sum_of_squares;
+	int sum;
+};
+struct lazy_attrs
+{
+	int setter = 0;
+	int incermentor = 0;
+};
 
 // A utility function to get the middle index from corner indexes. 
 int getMid(int s, int e) { return s + (e -s)/2; } 
+
 
 int getSumUtil(int *st, int ss, int se, int qs, int qe, int si) 
 {
@@ -77,6 +88,49 @@ void build(int a[], int v, int tl, int tr) {
         build(a, v*2+1, tm+1, tr);
         t[v] = t[v*2] + t[v*2+1];
     }
+}
+void lazy_update_setter(tree_attrs* tree, lazy_attrs* lazy, int start, int end, int left, int right, int current_position, int x)
+{
+	if (start > end)
+	{
+		return;
+	}
+	if (lazy[current_position].setter != 0)
+	{
+		tree[current_position].sum = (right-left + 1) * (lazy[current_position].setter);
+		tree[current_position].sum_of_squares = (right-left + 1) * (lazy[current_position].setter * lazy[current_position].setter);
+		if (start != end)
+		{
+			lazy[2 * current_position].setter = lazy[current_position].setter;
+			lazy[2 * current_position+1].setter = lazy[current_position].setter;
+		}
+		lazy[current_position].setter = 0;
+	}
+
+	//completely outside
+	if (start > right || end < left)
+	{
+		return;
+	}
+	//complete overlap
+	if (start >= left && end <= right)
+	{
+		tree[current_position].sum_of_squares = (right-left + 1) * (x * x);
+		tree[current_position].sum = (right-left + 1) * x;
+		if (start != end)
+		{
+			lazy[2 * current_position].setter = x;
+			lazy[2 * current_position + 1].setter = x;
+		}
+		return;
+	}
+	//partial overlap
+	int mid = (start + end) / 2;
+	lazy_update_setter(tree, lazy, start, mid, left, right, 2 * current_position, x);
+	lazy_update_setter(tree, lazy, mid+1, end, left, right, 2 * current_position+1, x);
+	tree[current_position].sum = tree[2 * current_position].sum + tree[2 * current_position + 1].sum;
+	tree[current_position].sum_of_squares = tree[2 * current_position].sum_of_squares + tree[2 * current_position + 1].sum_of_squares;
+	return;
 }
 int main() 
 { 
