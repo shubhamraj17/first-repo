@@ -40,24 +40,18 @@ void updateValueUtil(int *st, int ss, int se, int i, int diff, int si)
 
 // The function to update a value in input array and segment tree. 
 // It uses updateValueUtil() to update the value in segment tree 
-void updateValue(int arr[], int *st, int n, int i, int new_val) 
-{ 
-	// Check for erroneous input index 
-	if (i < 0 || i > n-1) 
-	{ 
-		cout<<"Invalid Input"; 
-		return; 
-	} 
-
-	// Get the difference between new value and old value 
-	int diff = new_val - arr[i]; 
-
-	// Update the value in array 
-	arr[i] = new_val; 
-
-	// Update the values of nodes in segment tree 
-	updateValueUtil(st, 0, n-1, i, diff, 0); 
-} 
+void update(int v, int tl, int tr, int pos, int new_val) {
+    if (tl == tr) {
+        t[v] = new_val;
+    } else {
+        int tm = (tl + tr) / 2;
+        if (pos <= tm)
+            update(v*2, tl, tm, pos, new_val);
+        else
+            update(v*2+1, tm+1, tr, pos, new_val);
+        t[v] = t[v*2] + t[v*2+1];
+    }
+}
 
 // Return sum of elements in range from index qs (quey start) 
 // to qe (query end). It mainly uses getSumUtil() 
